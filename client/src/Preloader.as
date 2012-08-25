@@ -22,8 +22,13 @@ package
 	 */
 	public class Preloader extends MovieClip 
 	{
+		[Embed(source = 'logo.png')]
+		public static var _logoClass:Class;		
+		public static var _logo:Bitmap = new _logoClass as Bitmap;
 		
 		public static var coefficients:Array = [];
+		
+		public static var 
 		
 		public static var curve:Sprite = new Sprite;
 		
