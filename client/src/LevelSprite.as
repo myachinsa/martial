@@ -120,6 +120,16 @@ package
 			{
 				var pidor:Unit = pidorList[i] as Unit;
 				if (pidor == null) continue;
+				var itemToHand:Item = pidor.itemId == -1 ? null:itemList[pidor.itemId]; 
+				if (itemToHand != null) 
+				{
+					if (itemToHand.y + 5 < pidor.x) 
+					{
+						pidor.itemId = -1;
+						itemToHand.handler = -1;
+					}
+				}
+				else pidor.itemId = -1;
 				
 				
 				
@@ -129,11 +139,12 @@ package
 				//var pixLeft:uint = groundMap.getPixel32( pidor.x / 4 - 1 >= 0 ? pidor.x / 4 - 1 : 0, pidor.y / 4 );
 				//var pixRight:uint = groundMap.getPixel32( pidor.x / 4 - 1 <= 200 ? pidor.x / 4 + 1 : 200, pidor.y / 4 );
 				
-				//if (pidor.waiting == 0) {
+				//if (pidor.itemId == -1) {
 					//trace(pidor.id);
 					var min:Number = -1;
 					var argMinX:int = 0;
 					var argMinY:int = 0;
+					var argMinID:int = -1;
 					for each (var item:Item in itemList) 
 					{
 						if (item == null) continue;
@@ -143,23 +154,43 @@ package
 							THIS.removeChild(item);
 							itemList[item.id] = null;							
 						}
-						if (item.y - 20 < pidor.y && (min == -1 || dist < min)) {
+						if (pidor.itemId != -1) {
+							argMinX = pidor.x - item.x;
+							argMinY = pidor.y - item.y;
+							argMinID = item.id;
+							
+							continue;
+						}
+						
+						if (item.handler == -1 && item.y > pidor.y && (min == -1 || dist < min)) {
 							min = dist;
 							argMinX = pidor.x - item.x;
 							argMinY = pidor.y - item.y;
+							argMinID = item.id;
 						}
+						
 					}
-					if (argMinX < -20) pidor.orientation = 1;
-					else if (argMinX > 20) pidor.orientation = -1;
-					else pidor.orientation = 0;
+					if (argMinID != -1){
+						if (argMinX < -20) pidor.orientation = 1;
+						else if (argMinX > 20) pidor.orientation = -1;
+						else pidor.orientation = 0;
+						
+						pidor.itemId = argMinID;
+						item.handler = pidor.id;							
+						
+					}
+					//if (argMinID >= 0)(itemList[id] as Item).handled = 1;
 				//}
 				
 				if (pix == 0) 
 				{	
-					if (groundMap.getPixel32( pidor.x / 4, pidor.y / 4 + 2 ) != 0 )
+					if (groundMap.getPixel32( pidor.x / 4, pidor.y / 4 + 2 ) != 0  && pidor.itemId == -1)
 					{
-						if (pidor.orientation == 0) 
-							pidor.orientation = random( -1, 2);
+						if (pidor.orientation == 0) {
+							if (argMinX < 0) pidor.orientation = 1;
+							else if (argMinX > 0) pidor.orientation = -1;
+							else pidor.orientation = Math.random()>0.5?1:-1;
+						}
 					
 						if (groundMap.getPixel32( (pidor.x  + pidor.orientation) / 4, pidor.y / 4 + 1 ) == 0)
 						{
@@ -209,7 +240,7 @@ package
 			}
 			
 			if (newPidorWait <= 0) {
-				//newPidor();
+				newPidor();
 				newPidorWait = Math.random() * standartNewPidorWait;
 			}
 			else newPidorWait--;

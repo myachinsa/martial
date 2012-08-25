@@ -19,6 +19,7 @@ package
 		public var waiting:int = standartWaiting;
 		public var orientation:int = 1;
 		public var id:int = -1;
+		public var itemId:int = -1;
 		
 		[Embed(source = 'padaet.png')]
 		public static var _padaetClass:Class;		
@@ -66,7 +67,7 @@ package
 		
 		public function onFrame (e:Event = null) : void
 		{
-			tf.text = orientation.toString() + " " + waiting;
+			tf.text = orientation.toString() + " " + waiting + " " + itemId;
 		}
 	}
 
