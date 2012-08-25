@@ -8,6 +8,7 @@ package
 	public class Item extends Sprite
 	{
 		public var id:int = -1;
+		public var handler:int = -1;
 		public function Item() 
 		{
 			var pp:Sprite = new Sprite;
