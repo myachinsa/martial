@@ -176,7 +176,7 @@ package
 						else pidor.orientation = 0;
 						
 						pidor.itemId = argMinID;
-						item.handler = pidor.id;							
+						//item.handler = pidor.id;							
 						
 					}
 					//if (argMinID >= 0)(itemList[id] as Item).handled = 1;
