@@ -14,7 +14,7 @@ package
 	 */
 	public class LevelSprite extends Sprite
 	{
-		[Embed(source = 'soil.jpg')]
+		[Embed(source = 'soil.png')]
 		public static var _soilClass:Class;		
 		public static var _soil:Bitmap = new _soilClass as Bitmap;
 		
