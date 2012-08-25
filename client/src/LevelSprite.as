@@ -14,7 +14,7 @@ package
 	 */
 	public class LevelSprite extends Sprite
 	{
-		[Embed(source = 'soil.jpg')]
+		[Embed(source = 'soil.png')]
 		public static var _soilClass:Class;		
 		public static var _soil:Bitmap = new _soilClass as Bitmap;
 		
@@ -90,8 +90,8 @@ package
 				
 				// check the current position of Pidor:
 				var pix:uint = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 );
-				var pixLeft:uint = groundMap.getPixel32( pidor.x / 4 - 1 >= 0 ? pidor.x / 4 - 1 : 0, pidor.y / 4 );
-				var pixRight:uint = groundMap.getPixel32( pidor.x / 4 - 1 <= 200 ? pidor.x / 4 + 1 : 200, pidor.y / 4 );
+				//var pixLeft:uint = groundMap.getPixel32( pidor.x / 4 - 1 >= 0 ? pidor.x / 4 - 1 : 0, pidor.y / 4 );
+				//var pixRight:uint = groundMap.getPixel32( pidor.x / 4 - 1 <= 200 ? pidor.x / 4 + 1 : 200, pidor.y / 4 );
 				
 				if (pix==0) {	
 					//while (pix == 0) {			
@@ -100,13 +100,7 @@ package
 						pix = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 );
 					//}					
 					
-				}
-				else if (pixLeft == 0){
-					pidor.x --;					
-				}	
-				else if (pixRight == 0){
-					pidor.x ++;					
-				}				
+				}		
 				else if (pix != 0)
 				{					
 					// вырезаем кусок почвы!
@@ -120,13 +114,13 @@ package
 					else pidor.waiting--;
 				}
 				
-				if (pidor.x >= 800) {
+				if (pidor.x >= 780) {
 					pidor.orientation *= -1.0;
-					pidor.x = 800;
+					pidor.x = 780;
 				}
-				if (pidor.x <= 0) {
+				if (pidor.x <= 20) {
 					pidor.orientation *= -1.0;
-					pidor.x = 0;						
+					pidor.x = 20;						
 				}				
 			}
 		}
