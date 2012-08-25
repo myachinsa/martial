@@ -53,7 +53,7 @@ package
 			
 		}
 		
-		public function random (a:Number, b:Number):Number
+		public static function random (a:Number, b:Number):Number
 		{
 			return a + (b - a) * Math.random();
 		}
@@ -90,21 +90,44 @@ package
 				
 				// check the current position of Pidor:
 				var pix:uint = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 );
+				var pixLeft:uint = groundMap.getPixel32( pidor.x / 4 - 1 >= 0 ? pidor.x / 4 - 1 : 0, pidor.y / 4 );
+				var pixRight:uint = groundMap.getPixel32( pidor.x / 4 - 1 <= 200 ? pidor.x / 4 + 1 : 200, pidor.y / 4 );
 				
-				if (pix != 0)
-				{
+				if (pix==0) {	
+					//while (pix == 0) {			
+						pidor.y += random(0, 2);
+						pidor.x += random( -1, 2) * pidor.orientation;					
+						pix = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 );
+					//}					
+					
+				}
+				else if (pixLeft == 0){
+					pidor.x --;					
+				}	
+				else if (pixRight == 0){
+					pidor.x ++;					
+				}				
+				else if (pix != 0)
+				{					
 					// вырезаем кусок почвы!
-					for (var j:int = 0; j < 9; j++) 
-					{
-						groundMap.fillRect( new Rectangle( pidor.x / 4 + random( -3, 4), pidor.y / 4 + random( -3, 4), random(2, 4), random(2, 4)), 0x00000000 );
+					if (pidor.waiting == 0){
+						for (var j:int = 0; j < 9; j++) 
+						{
+							groundMap.fillRect( new Rectangle( pidor.x / 4 + random( -3, 4), pidor.y / 4 + random( -3, 4), random(2, 4), random(2, 4)), 0x0000ffff );
+						}
+						pidor.waiting = Unit.standartWaiting;
 					}
-				}
-				else
-				{
-					pidor.y += random(0, 2);
-					pidor.x += random( -1, 2);
+					else pidor.waiting--;
 				}
 				
+				if (pidor.x >= 800) {
+					pidor.orientation *= -1.0;
+					pidor.x = 800;
+				}
+				if (pidor.x <= 0) {
+					pidor.orientation *= -1.0;
+					pidor.x = 0;						
+				}				
 			}
 		}
 		
@@ -113,12 +136,16 @@ package
 			groundMap.fillRect(new Rectangle(0, 0, 200, DEPTH), 0xff000000);
 			
 			groundMap.copyPixels( _soil.bitmapData, new Rectangle(0, 0, 200, DEPTH), new Point(0, 0) );
-			
-			var unit:Unit = new Unit;
-			unit.x = 400;
-			unit.y = 5;
-			THIS.addChild( unit );
-			pidorList.push( unit );
+			for (var i:int = 0; i < 12; i++) 
+			{
+					
+				var unit:Unit = new Unit;
+				unit.x = random(10,790);
+				unit.y = 5;
+				unit.orientation = (1 + Math.random() * 2) - 2;
+				THIS.addChild( unit );
+				pidorList.push( unit );
+			}
 			
 		}
 		
