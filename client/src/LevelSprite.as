@@ -27,11 +27,16 @@ package
 		public static var soilSprite:Sprite = new Sprite;
 		
 		public static var pidorList:Array = new Array;
+		public static var itemList:Array = new Array;
 		
 		public static var THIS:LevelSprite = null;
 		
 		public static var maskBmp:BitmapData = new BitmapData(200, DEPTH, true, 0xff000000);
 		public static var maskedSoil:Bitmap = new Bitmap(maskBmp);
+		
+		public static var standartNewPidorWait:int = 200; 
+		public static var newPidorWait:int = standartNewPidorWait;
+		public static var pidorCnt:int = 0;
 				
 		public function LevelSprite() 
 		{
@@ -49,7 +54,15 @@ package
 			addEventListener(Event.ENTER_FRAME, onFrame);
 			
 			//stage.addEventListener(MouseEvent.MOUSE_MOVE, onMove);
-			
+			//добавляем реликвии
+			for (var i:int = 0; i < 800; ++i) {
+				var item:Item = new Item;
+				item.x = random(10, 790);
+				item.y = random( 500, DEPTH * 4);
+				item.id = i;
+				itemList.push(item);
+				THIS.addChild(item);				
+			}
 			
 		}
 		
@@ -80,39 +93,73 @@ package
 				{
 					y -= 5;
 				}				
-			}			
+			}
+			
+			
 			
 			////////////////////////////
-			// UNIT LOGIC
+			// PIDORS LOGIC
 			for (var i:int = 0; i < pidorList.length; i++) 
 			{
 				var pidor:Unit = pidorList[i] as Unit;
+				if (pidor == null) continue;
 				
 				// check the current position of Pidor:
-				var pix:uint = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 );
+				var pix:uint = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 - 1 );
 				//var pixLeft:uint = groundMap.getPixel32( pidor.x / 4 - 1 >= 0 ? pidor.x / 4 - 1 : 0, pidor.y / 4 );
 				//var pixRight:uint = groundMap.getPixel32( pidor.x / 4 - 1 <= 200 ? pidor.x / 4 + 1 : 200, pidor.y / 4 );
+				
+				//if (pidor.waiting == 0) {
+					//trace(pidor.id);
+					var min:Number = -1;
+					var argMinX:int = 0;
+					var argMinY:int = 0;
+					for each (var item:Item in itemList) 
+					{
+						if (item == null) continue;
+						//trace(item.id);
+						var dist:Number = (item.x - pidor.x) * (item.x -pidor.x) + (item.y - pidor.y) * (item.y - pidor.y);
+						if (dist < 400) {
+							THIS.removeChild(item);
+							itemList[item.id] = null;							
+						}
+						if (item.y - 20 < pidor.y && (min == -1 || dist < min)) {
+							min = dist;
+							argMinX = pidor.x - item.x;
+							argMinY = pidor.y - item.y;
+						}
+					}
+					if (argMinX < -20) pidor.orientation = -1;
+					else if (argMinX > 20) pidor.orientation = 1;
+					else pidor.orientation = 0;
+				//}
 				
 				if (pix==0) {	
 					//while (pix == 0) {			
 						pidor.y += random(0, 2);
-						pidor.x += random( -1, 2) * pidor.orientation;					
+						pidor.x += random( -1, -1) * pidor.orientation;					
 						pix = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 );
 					//}					
 					
 				}		
-				else if (pix != 0)
+				else
 				{					
+					groundMap.fillRect( new Rectangle(pidor.x / 4 , pidor.y / 4 , 1, 1), 0x0000ffff );
+					
+					
 					// вырезаем кусок почвы!
 					if (pidor.waiting == 0){
 						for (var j:int = 0; j < 9; j++) 
 						{
 							groundMap.fillRect( new Rectangle( pidor.x / 4 + random( -3, 4), pidor.y / 4 + random( -3, 4), random(2, 4), random(2, 4)), 0x0000ffff );
 						}
+						
 						pidor.waiting = Unit.standartWaiting;
+						
 					}
 					else pidor.waiting--;
 				}
+				
 				
 				if (pidor.x >= 780) {
 					pidor.orientation *= -1.0;
@@ -123,6 +170,34 @@ package
 					pidor.x = 20;						
 				}				
 			}
+			
+			if (newPidorWait <= 0) {
+				newPidor();
+				newPidorWait = Math.random() * standartNewPidorWait;
+			}
+			else newPidorWait--;
+		}
+		public static function newPidor():void {
+			var unit:Unit = new Unit;
+				unit.x = random(10, 790);
+				unit.y = 0;
+				/*
+				trace(_soil.bitmapData.getPixel32(unit.x / 4, unit.y / 4));
+				while (unit.y > -4 * DEPTH && _soil.bitmapData.getPixel32(unit.x / 4, unit.y / 4) == 0) {
+					trace("y:" + unit.y);
+					
+					trace("i:" + _soil.bitmapData.getPixel32(unit.x / 4, unit.y / 4));
+					unit.y -= 4;
+				}
+				*/
+				unit.orientation = (1 + Math.random() * 2) - 2;
+				unit.id = pidorCnt;
+				pidorCnt++;
+				unit.buttonMode = true;
+				unit.THIS = THIS;
+				unit.useHandCursor = false;
+				THIS.addChild( unit );
+				pidorList.push( unit );
 		}
 		
 		public static function newLevel():void
@@ -133,14 +208,14 @@ package
 			for (var i:int = 0; i < 12; i++) 
 			{
 					
-				var unit:Unit = new Unit;
-				unit.x = random(10,790);
-				unit.y = 5;
-				unit.orientation = (1 + Math.random() * 2) - 2;
-				THIS.addChild( unit );
-				pidorList.push( unit );
+				newPidor();
 			}
 			
+		}
+		public function fuckPidor (id:int) : void
+		{
+			removeChild(pidorList[id]);
+			pidorList[id] = null;	
 		}
 		
 	}

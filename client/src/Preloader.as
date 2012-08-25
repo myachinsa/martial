@@ -36,6 +36,7 @@ package
 		public static var fbBmpCont:Sprite = new Sprite;
 		public static var curveCont:Sprite = new Sprite;
 		
+		
 		public function Preloader() 
 		{
 			addChild(firstScreen);
