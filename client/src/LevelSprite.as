@@ -211,6 +211,8 @@ package
 						pidor.y = 4 * (pidor.y / 4);
 						
 						pidor.go = 1;
+						
+						
 						if (pidor.orientation == 0) {
 							if(pidor.itemId != -1){
 								if (itemList[pidor.itemId] == null) {
@@ -267,8 +269,11 @@ package
 						
 						pidor.waiting = pidor.pidorWaiting;
 						
+						
 					}
 					else if (pidor.waiting == 0) {
+						
+						
 						for (j = 0; j < 29; j++) 
 						{
 							groundMap.fillRect( new Rectangle( pidor.x / 4 + random( -3, 4), pidor.y / 4 + random( 0, 4), random(2, 4), random(1, 4)), 0x0000ffff );
@@ -278,7 +283,11 @@ package
 						pidor.go = 0;
 						
 					}
-					else pidor.waiting--;
+					else 
+					{
+						pidor.bombAnimation ();
+						pidor.waiting--;
+					}
 				}
 				
 				

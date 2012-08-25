@@ -18,6 +18,7 @@ package
 		public var currentFramePause:int = 1;
 		public var w:int = 16;
 		public var h:int = 16;
+		public var repeatFrame:int = 0;
 		
 		public var bmpData:BitmapData;
 		public var bmp:Bitmap;
@@ -51,7 +52,7 @@ package
 				{
 					currentFrame++;
 					if (currentFrame > frames.length - 1)
-						currentFrame = 0;
+						currentFrame = repeatFrame;
 						
 					frame = frames[currentFrame];
 				}

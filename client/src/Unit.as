@@ -67,17 +67,26 @@ package
 		public function fallAnimation():void
 		{
 			anim.frames = [0, 1, 2, 3, 4];
+			anim.repeatFrame = 0;
 		}
 		
 		public function leftAnimation():void
 		{
-			anim.frames = [8,9,10];
+			anim.frames = [8, 9, 10];
+			anim.repeatFrame = 0;
 		}
 		
 		public function rightAnimation():void
 		{
-			anim.frames = [5,6,7];
+			anim.frames = [5, 6, 7];
+			anim.repeatFrame = 0;
 		}		
+		
+		public function bombAnimation ():void
+		{
+			anim.frames = [11, 12, 13, 14, 15, 16, 17, 18, 19];
+			anim.repeatFrame = 7;		
+		}
 		
 		public function fuck (e:MouseEvent = null) : void
 		{
