@@ -13,7 +13,7 @@ package
 			var pp:Sprite = new Sprite;
 			
 			pp.graphics.beginFill(0x00ff00, 1);
-			pp.graphics.drawCircle(0, -2, 5);
+			pp.graphics.drawCircle(0, 0, 5);
 			addChild(pp);
 			//pp.addEventListener(MouseEvent.CLICK, fuck);
 		}
