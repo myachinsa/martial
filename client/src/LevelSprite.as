@@ -208,6 +208,8 @@ package
 				{	
 					if (groundMap.getPixel32( pidor.x / 4, pidor.y / 4 + 2 ) != 0)
 					{
+						pidor.y = 4 * (pidor.y / 4);
+						
 						pidor.go = 1;
 						if (pidor.orientation == 0) {
 							if(pidor.itemId != -1){
@@ -236,9 +238,13 @@ package
 						{
 							pidor.y += 1;// int(random(0, 2));
 						}
+						
+						if (pidor.orientation < 0) pidor.leftAnimation();
+						else pidor.rightAnimation();
 					}
 					else
 					{
+						pidor.fallAnimation();
 						pidor.go = 0;
 						pidor.y += int(random(1, 6) * pidor.speed / 4.0);
 						pidor.x += pidor.orientation;					
