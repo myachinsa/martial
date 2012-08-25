@@ -22,13 +22,11 @@ package
 	 */
 	public class Preloader extends MovieClip 
 	{
-		[Embed(source = 'logo.png')]
-		public static var _logoClass:Class;		
-		public static var _logo:Bitmap = new _logoClass as Bitmap;
+
 		
 		public static var coefficients:Array = [];
 		
-		public static var 
+		public static var firstScreen:Sprite = new Sprite;
 		
 		public static var curve:Sprite = new Sprite;
 		
@@ -40,6 +38,8 @@ package
 		
 		public function Preloader() 
 		{
+			addChild(firstScreen);
+			
 			if (stage) {
 				stage.scaleMode = StageScaleMode.NO_SCALE;
 				stage.align = StageAlign.TOP_LEFT;
@@ -63,13 +63,24 @@ package
 			fbBmpCont.scaleY = 1.05;
 			fbBmpCont.x = 400;
 			fbBmpCont.y = 300;
-			addChild(fbBmpCont);
+			firstScreen.addChild(fbBmpCont);
 			//addChild(curve);
 			
 			curve.alpha = 0.5;
 			fbBmp.alpha = 0.98;
 			
 			curveCont.addChild( curve );
+			
+			addEventListener(Event.ENTER_FRAME, function(e:Event):void { 
+					if (firstScreen.visible)
+					{
+						tau += 0.01;
+						if (tau > 1) tau = 0;
+						drawCurve( tau );
+						fbBmpCont.rotation += 1;					
+						alpha += 0.1;
+					}
+				} );			
 		}
 		
 		private function ioError(e:IOErrorEvent):void 
@@ -123,17 +134,15 @@ package
 			curve.x = 400;
 			curve.y = 300;		
 			
-			curve.alpha = 0.5;
+			if (main) main.alpha = 0.1;
 			
 			
 			fbBmpData.draw( this, null, null, BlendMode.DIFFERENCE );
 			fbBmpData.draw( curveCont );
-			curve.alpha = 1.0;
+			if (main) main.alpha = 1.0;
 			
 			//fbBmpData.applyFilter( fbBmpData, new Rectangle(100, 100, 600, 400), new Point(0, 0), new BlurFilter() );
 			fbBmp.bitmapData = fbBmpData;
-			
-			
 		}
 		
 		private function checkFrame(e:Event):void 
@@ -157,18 +166,17 @@ package
 		}
 		
 		public static var tau:Number = 0;
+		public static var alpha:Number = 0;
+		
+		public static var main:DisplayObject = null;
 		
 		private function startup():void 
 		{
 			var mainClass:Class = getDefinitionByName("Main") as Class;
-			addChild(new mainClass() as DisplayObject);
+			main = new mainClass() as DisplayObject
+			addChild(main);
 			
-			addEventListener(Event.ENTER_FRAME, function(e:Event):void { 
-					tau += 0.01;
-					if (tau > 1) tau = 0;
-					drawCurve( tau );
-					fbBmpCont.rotation += 1;
-				} );
+
 		}
 		
 	}
