@@ -114,6 +114,7 @@ package
 					var min:Number = -1;
 					var argMinX:int = 0;
 					var argMinY:int = 0;
+					var argMinID:int = -1;
 					for each (var item:Item in itemList) 
 					{
 						if (item == null) continue;
@@ -123,15 +124,17 @@ package
 							THIS.removeChild(item);
 							itemList[item.id] = null;							
 						}
-						if (item.y - 20 < pidor.y && (min == -1 || dist < min)) {
+						if (item.handled == 0 && item.y - 20 < pidor.y && (min == -1 || dist < min)) {
 							min = dist;
 							argMinX = pidor.x - item.x;
 							argMinY = pidor.y - item.y;
+							argMinID = id;
 						}
 					}
 					if (argMinX < -20) pidor.orientation = -1;
 					else if (argMinX > 20) pidor.orientation = 1;
 					else pidor.orientation = 0;
+					if (argMinID >= 0)(itemList[id] as Item).handled = 1;
 				//}
 				
 				if (pix==0) {	
