@@ -16,10 +16,14 @@ package
 	{
 		public static var pipiska:int = 0;
 		public static var standartWaiting:int = 20;
+		public var pidorWaiting:int = 20;
 		public var waiting:int = standartWaiting;
+		
+		public var speed:int = 2;
 		public var orientation:int = 1;
 		public var id:int = -1;
 		public var itemId:int = -1;
+		public var go:int = 1;
 		
 		[Embed(source = 'padaet.png')]
 		public static var _padaetClass:Class;		

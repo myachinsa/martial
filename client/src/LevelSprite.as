@@ -120,10 +120,16 @@ package
 			{
 				var pidor:Unit = pidorList[i] as Unit;
 				if (pidor == null) continue;
+				if (pidor.y > DEPTH * 4) 
+				{
+					THIS.removeChild(pidor);
+					pidorList[pidor.id] = null;
+					continue;
+				}
 				var itemToHand:Item = pidor.itemId == -1 ? null:itemList[pidor.itemId]; 
 				if (itemToHand != null) 
 				{
-					if (itemToHand.y + 5 < pidor.x) 
+					if (itemToHand.y + 5 < pidor.y) 
 					{
 						pidor.itemId = -1;
 						itemToHand.handler = -1;
@@ -141,7 +147,7 @@ package
 				
 				//if (pidor.itemId == -1) {
 					//trace(pidor.id);
-					var min:Number = -1;
+					var min:Number = 80000;
 					var argMinX:int = 0;
 					var argMinY:int = 0;
 					var argMinID:int = -1;
@@ -155,14 +161,21 @@ package
 							itemList[item.id] = null;							
 						}
 						if (pidor.itemId != -1) {
-							argMinX = pidor.x - item.x;
-							argMinY = pidor.y - item.y;
-							argMinID = item.id;
+							if (itemList[pidor.itemId] == null) {
+								pidor.itemId = -1;
+								continue;
+							}
+							argMinX = pidor.x - itemList[pidor.itemId].x;
+							argMinY = pidor.y - itemList[pidor.itemId].y;
+							
+							if (argMinX > 50) pidor.orientation = -1;
+							else if (argMinX < -50) pidor.orientation = 1;
+							//argMinID = item.id;
 							
 							continue;
 						}
 						
-						if (item.handler == -1 && item.y > pidor.y && (min == -1 || dist < min)) {
+						if (item.handler == -1 && item.y > pidor.y && dist < min) {
 							min = dist;
 							argMinX = pidor.x - item.x;
 							argMinY = pidor.y - item.y;
@@ -170,12 +183,21 @@ package
 						}
 						
 					}
-					if (argMinID != -1){
-						if (argMinX < -20) pidor.orientation = 1;
-						else if (argMinX > 20) pidor.orientation = -1;
+					if (argMinID != -1 && pidor.go == 0){
+						if (argMinX > 50) pidor.orientation = -1;
+						else if (argMinX < -50) pidor.orientation = 1;
 						else pidor.orientation = 0;
 						
-						pidor.itemId = argMinID;
+						if (itemList[argMinID] == null)
+						{
+							pidor.itemId = -1;
+						}
+						else 
+						{
+								
+							pidor.itemId = argMinID;
+							itemList[argMinID].handler = pidor.id;
+						}
 						//item.handler = pidor.id;							
 						
 					}
@@ -184,11 +206,25 @@ package
 				
 				if (pix == 0) 
 				{	
-					if (groundMap.getPixel32( pidor.x / 4, pidor.y / 4 + 2 ) != 0  && pidor.itemId == -1)
+					if (groundMap.getPixel32( pidor.x / 4, pidor.y / 4 + 2 ) != 0)
 					{
+						pidor.go = 1;
 						if (pidor.orientation == 0) {
-							if (argMinX < 0) pidor.orientation = 1;
-							else if (argMinX > 0) pidor.orientation = -1;
+							if(pidor.itemId != -1){
+								if (itemList[pidor.itemId] == null) {
+									pidor.itemId = -1;
+									continue;
+								}
+								else{
+									argMinX = pidor.x - itemList[pidor.itemId].x;
+									argMinY = pidor.y - itemList[pidor.itemId].y;
+								
+									if (argMinX < -50) pidor.orientation = 1;
+									else if (argMinX > 50) pidor.orientation = -1;
+									else pidor.orientation = Math.random()>0.5?1:-1;
+									pidor.waiting++;
+								}
+							}
 							else pidor.orientation = Math.random()>0.5?1:-1;
 						}
 					
@@ -203,9 +239,10 @@ package
 					}
 					else
 					{
-						pidor.y += 1;// int(random(0, 2));
+						pidor.go = 0;
+						pidor.y += int(random(1, 6) * pidor.speed / 4.0);
 						pidor.x += pidor.orientation;					
-						pix = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 );
+						//pix = groundMap.getPixel32( pidor.x / 4, pidor.y / 4 );
 					}
 					//}					
 					
@@ -216,13 +253,23 @@ package
 					
 					
 					// вырезаем кусок почвы!
-					if (pidor.waiting == 0){
+					if (pidor.waiting == 0 && pidor.go == 0){
 						for (var j:int = 0; j < 29; j++) 
 						{
 							groundMap.fillRect( new Rectangle( pidor.x / 4 + random( -3, 4), pidor.y / 4 + random( -3, 4), random(2, 4), random(2, 4)), 0x0000ffff );
 						}
 						
-						pidor.waiting = Unit.standartWaiting;
+						pidor.waiting = pidor.pidorWaiting;
+						
+					}
+					else if (pidor.waiting == 0) {
+						for (j = 0; j < 29; j++) 
+						{
+							groundMap.fillRect( new Rectangle( pidor.x / 4 + random( -3, 4), pidor.y / 4 + random( 0, 4), random(2, 4), random(1, 4)), 0x0000ffff );
+						}
+						
+						pidor.waiting = pidor.pidorWaiting;
+						pidor.go = 0;
 						
 					}
 					else pidor.waiting--;
@@ -260,9 +307,12 @@ package
 				*/
 				unit.orientation = (1 + Math.random() * 2) - 2;
 				unit.id = pidorCnt;
+				unit.itemId = -1;
 				pidorCnt++;
 				unit.buttonMode = true;
 				unit.THIS = THIS;
+				unit.pidorWaiting = Unit.standartWaiting * random(0.7, 2.0);
+				unit.speed = random(1,5);
 				unit.useHandCursor = false;
 				THIS.addChild( unit );
 				pidorList.push( unit );
@@ -273,7 +323,7 @@ package
 			groundMap.fillRect(new Rectangle(0, 0, 200, DEPTH), 0xff000000);
 			
 			groundMap.copyPixels( _soil.bitmapData, new Rectangle(0, 0, 200, DEPTH), new Point(0, 0) );
-			for (var i:int = 0; i < 1; i++) 
+			for (var i:int = 0; i < 6; i++) 
 			{
 					
 				newPidor();
