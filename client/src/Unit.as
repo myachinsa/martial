@@ -26,6 +26,7 @@ package
 		public static var _padaet:Bitmap = new _padaetClass as Bitmap;
 
 		public var THIS:LevelSprite = null;
+		public var anim:Animator
 		
 		public function Unit() 
 		{
@@ -36,7 +37,7 @@ package
 			addChild(pp);
 			pp.addEventListener(MouseEvent.CLICK, fuck);
 			
-			var anim:Animator = new Animator( _padaet as Bitmap);
+			anim = new Animator( _padaet as Bitmap);
 			anim.frames = [0, 1, 2, 3, 4];
 			
 			anim.x = -8;
@@ -58,6 +59,21 @@ package
 		}
 		
 		public var tf:TextField;
+		
+		public function fallAnimation():void
+		{
+			anim.frames = [0, 1, 2, 3, 4];
+		}
+		
+		public function leftAnimation():void
+		{
+			anim.frames = [8,9,10];
+		}
+		
+		public function rightAnimation():void
+		{
+			anim.frames = [5,6,7];
+		}		
 		
 		public function fuck (e:MouseEvent = null) : void
 		{

@@ -36,6 +36,8 @@ package
 			
 		}
 		
+		
+		
 		public function onFrame (e:Event = null) : void
 		{
 			if (currentFramePause != 1) currentFramePause--;
