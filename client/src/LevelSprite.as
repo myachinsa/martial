@@ -37,6 +37,8 @@ package
 		public static var standartNewPidorWait:int = 200; 
 		public static var newPidorWait:int = standartNewPidorWait;
 		public static var pidorCnt:int = 0;
+		
+		
 				
 		public function LevelSprite() 
 		{
@@ -349,6 +351,20 @@ package
 		{
 			removeChild(pidorList[id]);
 			pidorList[id] = null;	
+		}
+		public function molnijaPidora (id:int) : void
+		{
+			//removeChild(pidorList[id]);
+			//pidorList[id] = null;
+			
+			var pidoras:Unit = pidorList[id];
+			if (pidoras == null) return;
+			THIS.graphics.lineStyle(0, 0xffff00, 0.6);
+			THIS.graphics.moveTo(pidoras.pathX[0], pidoras.pathY[0]);
+			for (var i:int = 1; i < pidoras.pathCnt; ++i) 
+			{
+				THIS.graphics.lineTo(pidoras.pathX[i], pidoras.pathY[i]);
+			}
 		}
 		
 	}
