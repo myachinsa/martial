@@ -25,6 +25,10 @@ package
 		public var itemId:int = -1;
 		public var go:int = 1;
 		
+		public var pathCnt:int = 0;		
+		public var pathX:Array = new Array;		
+		public var pathY:Array = new Array;
+		
 		[Embed(source = 'padaet.png')]
 		public static var _padaetClass:Class;		
 		public static var _padaet:Bitmap = new _padaetClass as Bitmap;
@@ -39,7 +43,6 @@ package
 			pp.graphics.beginFill(0xff0000, 0);
 			pp.graphics.drawCircle(0, 0, 9);
 			addChild(pp);
-			pp.addEventListener(MouseEvent.CLICK, fuck);
 			
 			anim = new Animator( _padaet as Bitmap);
 			anim.frames = [0, 1, 2, 3, 4];
@@ -48,6 +51,7 @@ package
 			anim.y = -8;
 			addChild(anim);
 			
+			anim.addEventListener(MouseEvent.CLICK, fuck);
 			addEventListener(Event.ENTER_FRAME, onFrame);
 			
 			var ttf:TextFormat = new TextFormat();
@@ -91,12 +95,33 @@ package
 		public function fuck (e:MouseEvent = null) : void
 		{
 			//THIS.Pidor(id);
-			y -= 20;
+			//y -= 20;
+			THIS.molnijaPidora(id);
+			tf.text = orientation.toString() + " " + waiting + " " + itemId;
 		}
+		public var lastX:int;
+		public var lastY:int;
+		
 		
 		public function onFrame (e:Event = null) : void
 		{
-			tf.text = orientation.toString() + " " + waiting + " " + itemId;
+			//tf.text = orientation.toString() + " " + waiting + " " + itemId;
+			if (pathCnt == 0) 
+			{
+				pathX.push(x);
+				lastX = x;
+				pathY.push(y);
+				lastY = y;
+				pathCnt++;
+			}
+			else if (Math.abs(lastX - x) > 3 && Math.abs(lastY - y) > 3) 
+			{
+				pathX.push(x);
+				lastX = x;
+				pathY.push(y);
+				lastY = y;
+				pathCnt++;				
+			}
 		}
 	}
 

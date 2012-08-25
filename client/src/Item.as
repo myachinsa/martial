@@ -38,7 +38,7 @@ package
 		
 		public function onFrame (e:Event = null) : void
 		{
-			tf.text = id.toString() + " " + handler ;
+			//tf.text = id.toString() + " " + handler ;
 		}
 		
 	}
