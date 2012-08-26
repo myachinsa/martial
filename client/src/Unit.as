@@ -15,7 +15,7 @@ package
 	public class Unit extends Sprite
 	{
 		public static var pipiska:int = 0;
-		public static var standartWaiting:int = 60;
+		public static var standartWaiting:int = 220;
 		public var pidorWaiting:int = 20;
 		public var waiting:int = standartWaiting;
 		
