@@ -479,7 +479,7 @@ package
 				item.removeEventListener(Event.ENTER_FRAME,item.onFrame);
 				removeChild(item);
 				item.killde = 1;
-				item = null;
+				itemList[item.id] = null;
 			}
 			var pidor:Unit;
 			for each (pidor in pidorList) 
@@ -488,7 +488,7 @@ package
 				pidor.removeEventListener(Event.ENTER_FRAME,pidor.onFrame);
 				removeChild(pidor);
 				pidor.killde = 1;
-				pidor = null;
+				pidorList[pidor.id] = null;
 			}
 		}
 		
