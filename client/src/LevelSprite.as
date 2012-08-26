@@ -83,6 +83,13 @@ package
 			//stage.addEventListener(MouseEvent.MOUSE_MOVE, onMove);
 
 			
+			addEventListener(MouseEvent.MOUSE_DOWN, onDown);
+			
+		}
+		
+		public function onDown (e:MouseEvent = null) : void
+		{
+			groundMap.setPixel32( mouseX / 4, mouseY / 4, 0xff000000 + 0x00ffffff * Math.random() );
 		}
 		
 		public static function random (a:Number, b:Number):Number
@@ -329,7 +336,7 @@ package
 				unit.buttonMode = true;
 				unit.THIS = THIS;
 				unit.pidorWaiting = Unit.standartWaiting * random(0.7, 2.0);
-				unit.speed = random(1,5);
+				unit.speed = random(1,2);
 				unit.useHandCursor = false;
 				THIS.addChild( unit );
 				pidorList.push( unit );

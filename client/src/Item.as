@@ -1,5 +1,6 @@
 package  
 {
+	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.text.TextField;
@@ -10,13 +11,23 @@ package
 	 */
 	public class Item extends Sprite
 	{
+		[Embed(source = 'kost.png')]
+		public static var _kostClass:Class;		
+		public static var _kost:Bitmap = new _kostClass as Bitmap;
+		
 		public var id:int = -1;
 		public var handler:int = -1;
 		public function Item() 
 		{
+			var kost:Bitmap = new _kostClass as Bitmap;
+			kost.x = -16;
+			kost.y = -16;
+			
+			addChild(kost);
+			
 			var pp:Sprite = new Sprite;
 			
-			pp.graphics.beginFill(0x00ff00, 1);
+			pp.graphics.beginFill(0x00ff00, 0);
 			pp.graphics.drawCircle(0, 0, 5);
 			addChild(pp);
 			//pp.addEventListener(MouseEvent.CLICK, fuck);

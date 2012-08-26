@@ -15,11 +15,11 @@ package
 	public class Unit extends Sprite
 	{
 		public static var pipiska:int = 0;
-		public static var standartWaiting:int = 20;
+		public static var standartWaiting:int = 60;
 		public var pidorWaiting:int = 20;
 		public var waiting:int = standartWaiting;
 		
-		public var speed:int = 2;
+		public var speed:Number = 2;
 		public var orientation:int = 1;
 		public var id:int = -1;
 		public var itemId:int = -1;
