@@ -43,25 +43,40 @@ package
 		public var movingItemId:int = -1;
 		public var movingItemX:int = 0;
 		public var movingItemY:int = 0;
+		public var foundRecicts:int = 0;
+		
+		public static var scrollUp:Sprite = new Sprite;
+		public static var scrollDown:Sprite = new Sprite;
+		public static var tfr:TextField;
+		public static var resultSprite:Sprite = new Sprite;
+		public static var flushResults:int = 0;
+		public static var Loose:int = 0;
+		public static var TotalRelics:int = 0;
+		
+		public static var MAIN:Main = null;
 		
 		
 				
 		public function LevelSprite() 
 		{
 			THIS = this;
+			Loose = 0;
+			foundRecicts = 0;
 			
 			//mapMask.addChild(groundBmp);
 			//addChild(mapMask);
 			
 			groundBmp.scaleX = 4;
 			groundBmp.scaleY = 4;
+			TotalRelics = 1;// random(60, 80);
 			
 			soilSprite.addChild( groundBmp );
 			addChild(soilSprite);
 			
 			var setkaBMPData:BitmapData = new BitmapData(800, 4 * DEPTH, true, 0x00000000);
 			
-			/* bug for future
+			
+			// bug for future
 			for (var j:int = 0; j < 200; j++) 
 			{
 				setkaBMPData.fillRect(new Rectangle(j * 4 + 2, 0, 1, 4 * DEPTH), 0x09000000);
@@ -70,17 +85,21 @@ package
 			{
 				setkaBMPData.fillRect(new Rectangle(0, k * 4 + 2, 800, 1), 0x09000000);
 			}
-			*/
-			for (var j:int = 0; j < 200; j++) 
+			//
+			
+			for (j = 0; j < 200; j++) 
 			{
 				setkaBMPData.fillRect(new Rectangle(j * 4 + 3, 0, 1, 4 * DEPTH), 0xcc000000);
 			}
-			for (var k:int = 0; k < DEPTH; k++) 
+			for (k = 0; k < DEPTH; k++) 
 			{
 				setkaBMPData.fillRect(new Rectangle(0, k * 4 + 3, 800, 1), 0xcc000000);
 			}		
 			
 			var setka:Bitmap = new Bitmap(setkaBMPData);
+			
+			
+			
 			
 			addChild(setka);
 			
@@ -147,21 +166,49 @@ package
 				moveItem(movingItemId, mouseX, mouseY);
 			}
 		}
+		public function fffffound():void 
+		{
+			resultSprite.alpha = 1;
+			foundRecicts ++;
+			flushResults = 700;
+			tfr.text = "relics : " + foundRecicts.toString();
+			
+			if (foundRecicts >= TotalRelics) Loose = 1;
+		}
 		public function onFrame (e:Event = null) : void
 		{
+			if (Loose == 1) {
+				removeEventListener(Event.ENTER_FRAME, onFrame);
+				MAIN.toLoose();				
+				return;				
+			}
 			groundBmp.bitmapData = groundMap;
+			//if (resultSprite.alpha < 0.4) flushResults = 0;
+			flushResults -= 1;
+			if (flushResults > 599)
+			{
+				resultSprite.alpha = 0.5 + 0.4*Math.sin(Math.PI*(flushResults/30.0));
+			}
+			else {
+				resultSprite.alpha = 0.3;
+				flushResults = 0;
+			}
+			
+			scrollUp.alpha = -y/(4*DEPTH - 600);	
+			scrollDown.alpha = (y + 4*DEPTH - 600)/(4*DEPTH - 600);	
 			
 			if (Main.THIS.mouseY < 50)
 			{
 				if ( y < 0)
 				{
 					y += 5;
+					
 				}
 			}
 			
 			if (Main.THIS.mouseY > 550)
 			{
-				if ( y >= - 4*DEPTH + 600)
+				if ( y >= -4*DEPTH + 600)
 				{
 					y -= 5;
 				}				
@@ -205,10 +252,13 @@ package
 			for (var i:int = 0; i < pidorList.length; i++) 
 			{
 				var pidor:Unit = pidorList[i] as Unit;
+				
+				
 				if (pidor == null) continue;
 				if (pidor.y > DEPTH * 4) 
 				{
 					THIS.removeChild(pidor);
+					pidor.killde = 1;
 					pidorList[pidor.id] = null;
 					continue;
 				}
@@ -244,7 +294,9 @@ package
 						var dist:Number = (item.x - pidor.x) * (item.x -pidor.x) + (item.y - pidor.y) * (item.y - pidor.y);
 						if (dist < 440) {
 							THIS.removeChild(item);
-							itemList[item.id] = null;							
+							item.killde = 1;
+							itemList[item.id] = null;	
+							fffffound();
 						}
 						if (pidor.itemId != -1) {
 							if (itemList[pidor.itemId] == null) {
@@ -418,6 +470,27 @@ package
 				THIS.addChild( unit );
 				pidorList.push( unit );
 		}
+		public function destroy():void {
+			movingItemId = -1;
+			var item:Item;
+			for each (item in itemList) 
+			{
+				if (item == null) continue;
+				item.removeEventListener(Event.ENTER_FRAME,item.onFrame);
+				removeChild(item);
+				item.killde = 1;
+				item = null;
+			}
+			var pidor:Unit;
+			for each (pidor in pidorList) 
+			{
+				if (pidor == null) continue;
+				pidor.removeEventListener(Event.ENTER_FRAME,pidor.onFrame);
+				removeChild(pidor);
+				pidor.killde = 1;
+				pidor = null;
+			}
+		}
 		
 		public static function newLevel():void
 		{
@@ -431,7 +504,7 @@ package
 			}
 			
 			//добавляем реликвии
-			for (i = 0; i < 80; ++i) {
+			for (i = 0; i < TotalRelics; ++i) {
 				var item:Item = new Item;
 				item.x = random(10, 790);
 				item.y = random( 500, DEPTH * 4);
@@ -448,7 +521,7 @@ package
 			if (id == -1) return;
 			var item:Item = itemList[id];
 			if (item == null) return;
-			item.tf.text = id.toString() + " " + mouseX + " " + mouseY;
+			//item.tf.text = id.toString() + " " + mouseX + " " + mouseY;
 			movingItemId = id;
 			movingItemX = mouseX + 0;// x / 2;
 			movingItemY  = mouseY + 0;// y / 2;

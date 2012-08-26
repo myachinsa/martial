@@ -15,7 +15,7 @@ package
 	public class Unit extends Sprite
 	{
 		public static var pipiska:int = 0;
-		public static var standartWaiting:int = 220;
+		public static var standartWaiting:int = 20;
 		public var pidorWaiting:int = 20;
 		public var waiting:int = standartWaiting;
 		
@@ -34,15 +34,11 @@ package
 		public static var _padaet:Bitmap = new _padaetClass as Bitmap;
 
 		public var THIS:LevelSprite = null;
-		public var anim:Animator
-		
+		public var anim:Animator;
+		public var killde:int = 0;
 		public function Unit() 
 		{
-			var pp:Sprite = new Sprite;
 			
-			pp.graphics.beginFill(0xff0000, 0);
-			pp.graphics.drawCircle(0, 0, 9);
-			addChild(pp);
 			
 			anim = new Animator( _padaet as Bitmap);
 			anim.frames = [0, 1, 2, 3, 4];
@@ -105,6 +101,10 @@ package
 		
 		public function onFrame (e:Event = null) : void
 		{
+			if (killde == 1) {
+				removeEventListener(Event.ENTER_FRAME, onFrame);
+				return;
+			}
 			//tf.text = orientation.toString() + " " + waiting + " " + itemId;
 			if (pathCnt == 0) 
 			{

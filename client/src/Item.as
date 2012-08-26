@@ -18,6 +18,7 @@ package
 		public var THIS:LevelSprite = null;
 		
 		public var hand:int;
+		public var killde:int = 0;
 		
 		
 		public var id:int = -1;
@@ -54,6 +55,10 @@ package
 		
 		public function onFrame (e:Event = null) : void
 		{
+			if (killde == 1) {
+				removeEventListener(Event.ENTER_FRAME, onFrame);
+				return;
+			}
 			//tf.text = id.toString() + " " + handler ;
 		}
 		public function onDown (e:MouseEvent = null) : void
