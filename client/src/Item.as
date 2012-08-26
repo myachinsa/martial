@@ -2,7 +2,7 @@ package
 {
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
-	import flash.events.Event;
+	import flash.events.*;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	/**
@@ -15,6 +15,11 @@ package
 		public static var _kostClass:Class;		
 		public static var _kost:Bitmap = new _kostClass as Bitmap;
 		
+		public var THIS:LevelSprite = null;
+		
+		public var hand:int;
+		
+		
 		public var id:int = -1;
 		public var handler:int = -1;
 		public function Item() 
@@ -26,11 +31,11 @@ package
 			addChild(kost);
 			
 			var pp:Sprite = new Sprite;
+			hand = 0;
 			
-			pp.graphics.beginFill(0x00ff00, 0);
-			pp.graphics.drawCircle(0, 0, 5);
-			addChild(pp);
-			//pp.addEventListener(MouseEvent.CLICK, fuck);
+			addEventListener(MouseEvent.MOUSE_DOWN, onDown);
+			addEventListener(MouseEvent.MOUSE_UP, onUp);
+			
 		addEventListener(Event.ENTER_FRAME, onFrame);
 			
 			var ttf:TextFormat = new TextFormat();
@@ -50,6 +55,25 @@ package
 		public function onFrame (e:Event = null) : void
 		{
 			//tf.text = id.toString() + " " + handler ;
+		}
+		public function onDown (e:MouseEvent = null) : void
+		{
+			hand = 1;
+			
+			addEventListener(MouseEvent.MOUSE_MOVE, onMove);	
+		}
+		public function onUp (e:MouseEvent = null) : void
+		{
+			hand = 0;			
+			removeEventListener(MouseEvent.MOUSE_MOVE, onMove);
+		}
+		public function onMove (e:MouseEvent = null) : void
+		{
+			if (hand == 0) {
+				removeEventListener(MouseEvent.MOUSE_MOVE, onMove);
+				return;
+			}
+			THIS.moveItem(id, 0,0);
 		}
 		
 	}

@@ -8,6 +8,8 @@ package
 	import flash.events.WeakFunctionClosure;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	/**
 	 * ...
 	 * @author myachin
@@ -37,6 +39,10 @@ package
 		public static var standartNewPidorWait:int = 200; 
 		public static var newPidorWait:int = standartNewPidorWait;
 		public static var pidorCnt:int = 0;
+		
+		public var movingItemId:int = -1;
+		public var movingItemX:int = 0;
+		public var movingItemY:int = 0;
 		
 		
 				
@@ -85,13 +91,46 @@ package
 			
 			addEventListener(MouseEvent.MOUSE_DOWN, onDown);
 			
+			addEventListener(MouseEvent.MOUSE_UP, onUp);
+			
+			
+			var ttf:TextFormat = new TextFormat();
+			ttf.color = 0xffffff;
+			ttf.size = 18;
+			
+			tf = new TextField;
+			tf.defaultTextFormat = ttf;
+			tf.x = 100;
+			tf.y = 100;
+			tf.mouseEnabled = false;
+			addChild(tf);
+			
+			
 		}
-		
+		public var tf:TextField;
 		public function onDown (e:MouseEvent = null) : void
 		{
-			groundMap.setPixel32( mouseX / 4, mouseY / 4, 0xff000000 + 0x00ffffff * Math.random() );
+			if (e.target is Item) {
+				
+				addEventListener(MouseEvent.MOUSE_MOVE, onMove);
+				
+			}
+			else{
+				groundMap.setPixel32( mouseX / 4, mouseY / 4, 0xff000000 + 0x00ffffff * Math.random() );
+			}
 		}
-		
+		public function onUp (e:MouseEvent = null) : void
+		{
+			
+			removeEventListener(MouseEvent.MOUSE_MOVE, onMove);
+			movingItemId = -1;
+			tf.text = "UP";
+			for each (var item:Item in itemList) 
+			{
+				if (item == null) continue;
+				item.hand = 0;
+			}
+		}
 		public static function random (a:Number, b:Number):Number
 		{
 			return a + (b - a) * Math.random();
@@ -99,7 +138,14 @@ package
 		
 		public function onMove (e:MouseEvent = null) : void
 		{
-
+			//if (e.target is Item) {
+			//	moveItem((e.target as Item).id, 0, 0);
+			//}
+			tf.text = "moving " + movingItemId;
+			if (movingItemId != -1) 
+			{
+				moveItem(movingItemId, mouseX, mouseY);
+			}
 		}
 		public function onFrame (e:Event = null) : void
 		{
@@ -119,6 +165,37 @@ package
 				{
 					y -= 5;
 				}				
+			}
+			if (movingItemId == -1) 
+			{
+				for each (var item:Item in itemList) 
+				{
+					if (item == null) continue;
+					var pix1:uint = groundMap.getPixel32( item.x / 4, item.y / 4 + 1 );
+					var pix2:uint = groundMap.getPixel32( item.x / 4, item.y / 4 + 2 );
+					//tf.text = pix1.toString() + " " + pix2.toString();
+					if (pix1 == 0 && pix2 == 0)
+					{
+						item.y += 4;
+					}
+				}
+			}
+			else 
+			{
+				var ii:Item = itemList[movingItemId];
+				
+				if (ii != null) 
+				{
+					var dx:Number = ii.x - movingItemX;
+					var dy:Number = ii.y - movingItemY;
+					if (Math.abs(dx) <= 4) ii.x = movingItemX;
+					if (Math.abs(dy) <= 4) ii.y = movingItemY;
+					ii.x -= dx / 2;
+					ii.y -= dy / 2;
+				}
+				else {
+					movingItemId = -1;
+				}
 			}
 			
 			
@@ -160,12 +237,12 @@ package
 					var argMinX:int = 0;
 					var argMinY:int = 0;
 					var argMinID:int = -1;
-					for each (var item:Item in itemList) 
+					for each (item in itemList) 
 					{
 						if (item == null) continue;
 						//trace(item.id);
 						var dist:Number = (item.x - pidor.x) * (item.x -pidor.x) + (item.y - pidor.y) * (item.y - pidor.y);
-						if (dist < 400) {
+						if (dist < 440) {
 							THIS.removeChild(item);
 							itemList[item.id] = null;							
 						}
@@ -359,10 +436,54 @@ package
 				item.x = random(10, 790);
 				item.y = random( 500, DEPTH * 4);
 				item.id = i;
+				item.THIS = THIS;
 				itemList.push(item);
+				
 				THIS.addChild(item);				
 			}			
 		}
+		
+		public function moveItem (id:int, x:int, y:int) : void
+		{
+			if (id == -1) return;
+			var item:Item = itemList[id];
+			if (item == null) return;
+			item.tf.text = id.toString() + " " + mouseX + " " + mouseY;
+			movingItemId = id;
+			movingItemX = mouseX + 0;// x / 2;
+			movingItemY  = mouseY + 0;// y / 2;
+			if (movingItemX > 790) {
+				movingItemX = 790;
+				item.x = movingItemX;
+				item.y = movingItemY;
+				item.hand = 0;
+				movingItemId = -1;
+			}
+			if (movingItemY > DEPTH * 4) {
+				movingItemX = DEPTH * 4;
+				item.x = movingItemX;
+				item.y = movingItemY;
+				item.hand = 0;	
+				movingItemId = -1;
+			}
+			if (movingItemX < 5) {
+				movingItemX = 5;				
+				item.x = movingItemX;
+				item.y = movingItemY;
+				item.hand = 0;
+				movingItemId = -1;
+			}
+			if (movingItemY < 5) {
+				movingItemX = 5; 
+				item.x = movingItemX;
+				item.y = movingItemY;
+				item.hand = 0;
+				movingItemId = -1;
+			}
+			
+			
+		}
+		
 		public function fuckPidor (id:int) : void
 		{
 			removeChild(pidorList[id]);
