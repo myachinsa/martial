@@ -68,7 +68,7 @@ package
 			
 			groundBmp.scaleX = 4;
 			groundBmp.scaleY = 4;
-			TotalRelics = 1;// random(60, 80);
+			TotalRelics = random(60, 180);
 			
 			soilSprite.addChild( groundBmp );
 			addChild(soilSprite);
@@ -143,7 +143,7 @@ package
 			
 			removeEventListener(MouseEvent.MOUSE_MOVE, onMove);
 			movingItemId = -1;
-			tf.text = "UP";
+			//tf.text = "UP";
 			for each (var item:Item in itemList) 
 			{
 				if (item == null) continue;
@@ -160,7 +160,7 @@ package
 			//if (e.target is Item) {
 			//	moveItem((e.target as Item).id, 0, 0);
 			//}
-			tf.text = "moving " + movingItemId;
+			//tf.text = "moving " + movingItemId;
 			if (movingItemId != -1) 
 			{
 				moveItem(movingItemId, mouseX, mouseY);
@@ -171,7 +171,7 @@ package
 			resultSprite.alpha = 1;
 			foundRecicts ++;
 			flushResults = 700;
-			tfr.text = "relics : " + foundRecicts.toString();
+			tfr.text = "relics : " + (TotalRelics - foundRecicts).toString();
 			
 			if (foundRecicts >= TotalRelics) Loose = 1;
 		}
@@ -182,6 +182,8 @@ package
 				MAIN.toLoose();				
 				return;				
 			}
+			
+			tfr.text = "relics : " + (TotalRelics - foundRecicts).toString();
 			groundBmp.bitmapData = groundMap;
 			//if (resultSprite.alpha < 0.4) flushResults = 0;
 			flushResults -= 1;
@@ -260,6 +262,7 @@ package
 					THIS.removeChild(pidor);
 					pidor.killde = 1;
 					pidorList[pidor.id] = null;
+					//DEATH
 					continue;
 				}
 				var itemToHand:Item = pidor.itemId == -1 ? null:itemList[pidor.itemId]; 
@@ -440,8 +443,10 @@ package
 			}
 			
 			if (newPidorWait <= 0) {
-				newPidor();
-				newPidorWait = Math.random() * standartNewPidorWait;
+				for (j = random(2, 5); j > 0; --j ){
+					newPidor();
+					newPidorWait = Math.random() * standartNewPidorWait;
+				}
 			}
 			else newPidorWait--;
 		}
@@ -492,7 +497,7 @@ package
 			}
 		}
 		
-		public static function newLevel():void
+		public function newLevel():void
 		{
 			groundMap.fillRect(new Rectangle(0, 0, 200, DEPTH), 0xff000000);
 			
@@ -567,6 +572,8 @@ package
 			//removeChild(pidorList[id]);
 			//pidorList[id] = null;
 			
+			
+			
 			var pidoras:Unit = pidorList[id];
 			if (pidoras == null) return;
 			THIS.graphics.lineStyle(0, 0xffff00, 0.6);
@@ -575,6 +582,9 @@ package
 			{
 				THIS.graphics.lineTo(pidoras.pathX[i], pidoras.pathY[i]);
 			}
+			removeChild(pidoras);
+			pidorList[pidoras.id] = null;
+			//DEATH
 		}
 		
 	}

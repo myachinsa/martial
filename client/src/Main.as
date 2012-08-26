@@ -94,7 +94,7 @@ package
 			addChild(scrollUp);
 			addChild(resultSprite);
 			addChild(scrollDown);
-			LevelSprite.newLevel();
+			lvl.newLevel();
 			LevelSprite.scrollUp = scrollUp;
 			LevelSprite.scrollDown = scrollDown;
 			LevelSprite.tfr = tfr;
@@ -206,7 +206,7 @@ package
 			addChild(resultSprite);
 			
 			
-			LevelSprite.newLevel();
+			lvl.newLevel();
 			LevelSprite.scrollUp = scrollUp;
 			LevelSprite.scrollDown = scrollDown;
 			LevelSprite.tfr = tfr;
