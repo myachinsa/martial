@@ -67,6 +67,8 @@ package
 			firstScreen.addChild(startButton);		
 			
 			startButton.addEventListener(MouseEvent.CLICK, start);
+			
+			MusicMixer.playDefaultTrack();
 		}
 
 		
@@ -104,6 +106,8 @@ package
 		public var lvl:LevelSprite = null;
 		public function start (e:Event = null) : void
 		{
+			MusicMixer.playClick4();
+			
 			Preloader.firstScreen.visible = false;
 			removeChild(firstScreen);
 			firstScreen.visible = false;
@@ -112,7 +116,7 @@ package
 			addChild( lvl );
 			LooseScreen = new Sprite;
 			LooseScreen.graphics.beginFill(0x333433, 0.3);
-			LooseScreen.alpha = 0.7;
+			LooseScreen.alpha = 0.3;
 			
 			LooseScreen.graphics.drawRect(10, 10, 780, 580);
 			var ttf:TextFormat = new TextFormat();
@@ -124,9 +128,9 @@ package
 			alf.defaultTextFormat = ttf;
 			alf.x = 300;
 			alf.y = 200;
-			alf.width = 300;
+			alf.width = 600;
 			alf.mouseEnabled = false;
-			alf.text = "all relics found";
+			alf.text = "almost all relics found";
 			var yl:TextField = new TextField;
 			yl.defaultTextFormat = ttf;
 			yl.x = 300;

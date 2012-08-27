@@ -20,6 +20,25 @@ package
 		public static var _soilClass:Class;		
 		public static var _soil:Bitmap = new _soilClass as Bitmap;
 		
+		[Embed(source="../Death_scream_1.mp3")]
+		public static var Death_scream_1:Class;
+
+		[Embed(source="../Death_scream_2.mp3")]
+		public static var Death_scream_2:Class;
+  
+		[Embed(source="../Death_scream_3.mp3")]
+		public static var Death_scream_3:Class;
+		[Embed(source="../hit_1_down.mp3")]
+		public static var hit_1:Class;
+		[Embed(source="../Explo_1.mp3")]
+		public static var Explo_1:Class;
+
+		[Embed(source="../Explo_2.mp3")]
+		public static var Explo_2:Class;
+  
+		[Embed(source="../Explo_3.mp3")]
+		public static var Explo_3:Class;
+		
 		public static var DEPTH:int = 300;
 		public static var groundMap:BitmapData = new BitmapData(200, DEPTH, true, 0xff000000);
 		public static var groundBmp:Bitmap = new Bitmap(groundMap);
@@ -39,6 +58,7 @@ package
 		public static var standartNewPidorWait:int = 200; 
 		public static var newPidorWait:int = standartNewPidorWait;
 		public static var pidorCnt:int = 0;
+		public static var pidorDead:int = 0;
 		
 		public var movingItemId:int = -1;
 		public var movingItemX:int = 0;
@@ -68,7 +88,7 @@ package
 			
 			groundBmp.scaleX = 4;
 			groundBmp.scaleY = 4;
-			TotalRelics = random(60, 180);
+			TotalRelics = random(80, 120);
 			
 			soilSprite.addChild( groundBmp );
 			addChild(soilSprite);
@@ -124,6 +144,14 @@ package
 			tf.mouseEnabled = false;
 			addChild(tf);
 			
+		SoundQueue.addToBank(Death_scream_1, "d1");
+		SoundQueue.addToBank(Death_scream_2, "d2");
+		SoundQueue.addToBank(Death_scream_3, "d3");
+		SoundQueue.addToBank(Explo_1, "e1");
+		SoundQueue.addToBank(Explo_2, "e2");
+		SoundQueue.addToBank(Explo_3, "e3");
+		//SoundQueue.addToBank(hit_1, "h1");
+			
 			
 		}
 		public var tf:TextField;
@@ -136,6 +164,11 @@ package
 			}
 			else{
 				groundMap.setPixel32( mouseX / 4, mouseY / 4, 0xff000000 + 0x00ffffff * Math.random() );
+				groundMap.setPixel32( mouseX / 4, mouseY / 4+1, 0xff000000 + 0x00ffffff * Math.random() );
+				groundMap.setPixel32( mouseX / 4-1, mouseY / 4+1, 0xff000000 + 0x00ffffff * Math.random() );
+				groundMap.setPixel32( mouseX / 4+1, mouseY / 4+1, 0xff000000 + 0x00ffffff * Math.random() );
+				groundMap.setPixel32( mouseX / 4 , mouseY / 4+2, 0xff000000 + 0x00ffffff * Math.random() );
+				groundMap.setPixel32( mouseX / 4, mouseY / 4+3, 0xff000000 + 0x00ffffff * Math.random() );
 			}
 		}
 		public function onUp (e:MouseEvent = null) : void
@@ -173,7 +206,7 @@ package
 			flushResults = 700;
 			tfr.text = "relics : " + (TotalRelics - foundRecicts).toString();
 			
-			if (foundRecicts >= TotalRelics) Loose = 1;
+			if (foundRecicts + 4 >= TotalRelics) Loose = 1;
 		}
 		public function onFrame (e:Event = null) : void
 		{
@@ -263,6 +296,9 @@ package
 					pidor.killde = 1;
 					pidorList[pidor.id] = null;
 					//DEATH
+						Math.random() > 0.5?SoundQueue.play("d1"):SoundQueue.play("d2");
+						pidorDead++;
+					
 					continue;
 				}
 				var itemToHand:Item = pidor.itemId == -1 ? null:itemList[pidor.itemId]; 
@@ -299,6 +335,10 @@ package
 							THIS.removeChild(item);
 							item.killde = 1;
 							itemList[item.id] = null;	
+							
+					//if(Math.random()<0.1){
+							Math.random() > 0.3?SoundQueue.play("e1"):Math.random() > 0.5?SoundQueue.play("e2"):SoundQueue.play("e3");
+					//}
 							fffffound();
 						}
 						if (pidor.itemId != -1) {
@@ -382,8 +422,12 @@ package
 							pidor.y += 1;// int(random(0, 2));
 						}
 						
-						if (pidor.orientation < 0) pidor.leftAnimation();
+						if (pidor.orientation < 0) {
+							pidor.leftAnimation();
+							
+						}
 						else pidor.rightAnimation();
+					
 					}
 					else
 					{
@@ -402,7 +446,10 @@ package
 					
 					
 					// вырезаем кусок почвы!
-					if (pidor.waiting == 0 && pidor.go == 0){
+					if (pidor.waiting == 0 && pidor.go == 0) {
+						if(Math.random()<(3.0/(pidorCnt - pidorDead + 1))){
+						SoundQueue.play("e1");
+					}
 						for (var j:int = 0; j < 29; j++) 
 						{
 							groundMap.fillRect( new Rectangle( pidor.x / 4 + random( -3, 4), pidor.y / 4 + random( -3, 4), random(2, 4), random(2, 4)), 0x0000ffff );
@@ -413,7 +460,9 @@ package
 						
 					}
 					else if (pidor.waiting == 0) {
-						
+						if(Math.random()<(3.0/(pidorCnt - pidorDead + 1))){
+						SoundQueue.play("e1");
+					}
 						
 						for (j = 0; j < 29; j++) 
 						{
@@ -427,6 +476,10 @@ package
 					else 
 					{
 						pidor.bombAnimation ();
+						
+					if(Math.random()<0.1){
+						//SoundQueue.play("e1");
+					}
 						pidor.waiting--;
 					}
 				}
@@ -469,8 +522,8 @@ package
 				pidorCnt++;
 				unit.buttonMode = true;
 				unit.THIS = THIS;
-				unit.pidorWaiting = Unit.standartWaiting * random(0.7, 2.0);
-				unit.speed = random(1,2);
+				unit.pidorWaiting = Unit.standartWaiting * random(0.7, 4.0);
+				unit.speed = random(1,3);
 				unit.useHandCursor = false;
 				THIS.addChild( unit );
 				pidorList.push( unit );
@@ -585,6 +638,10 @@ package
 			removeChild(pidoras);
 			pidorList[pidoras.id] = null;
 			//DEATH
+			pidorDead++;
+					if(Math.random()<0.9){
+					Math.random() > 0.5?SoundQueue.play("d2"):SoundQueue.play("d3");
+					}
 		}
 		
 	}

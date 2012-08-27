@@ -64,7 +64,7 @@ package
 		public function onDown (e:MouseEvent = null) : void
 		{
 			hand = 1;
-			tf.text = id.toString() + " " + handler ;
+			//tf.text = id.toString() + " " + handler ;
 			addEventListener(MouseEvent.MOUSE_MOVE, onMove);	
 		}
 		public function onUp (e:MouseEvent = null) : void
